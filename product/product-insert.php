@@ -2,7 +2,7 @@
 
 require "../db.php";
 
-if ($_SERVER["REQUEST_METHOD"] == 'POST') {
+if ($_SERVER["REQUEST_METHOD"] == 'POST') { // pas als het formulier ingevuld dan wordt de data opgeslagen in de database (ISSET)
     try {
         $productnaam = htmlspecialchars($_POST['productnaam']);
         $prijs = htmlspecialchars($_POST['prijs']);

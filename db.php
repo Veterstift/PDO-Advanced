@@ -14,7 +14,6 @@ class DB {
         }
     }
 
-    /*
     public function insertPersoon($naam, $geboortedatum)
     {
         $stmt = $this->pdo->prepare("INSERT INTO persoon (naam, geboortedatum) VALUES (:naam, :geboortedatum)");
@@ -22,15 +21,85 @@ class DB {
             "naam" => $naam,
             "geboortedatum" => $geboortedatum
         ]);
-    }*/
+    }
 
-    public function insertProduct($productnaam, $prijs)
+    public function registerUser($naam, $email, $password)
     {
-        $stmt = $this->pdo->prepare("INSERT INTO producten (productnaam, prijs) VALUES (:productnaam, :prijs)");
+        $password = password_hash($password, PASSWORD_DEFAULT);
+        $stmt = $this->pdo->prepare("INSERT INTO user (naam, email, password) VALUES (:naam, :email, :password)");
         $stmt->execute([
-            "productnaam" => $productnaam,
-            "prijs" => $prijs
+            "naam" => $naam,
+            "email" => $email,
+            "password" => $password
         ]);
+    }
+    
+    public function login($email)
+    {
+        $stmt = $this->pdo->prepare("SELECT * FROM user (naam, email, password) VALUES (:naam, :email, :password)");
+        $stmt->execute([
+            "email" => $email
+        ]);
+        return $stmt->fetch();
+    }
+
+    public function insertProduct($naam, $password)
+    {
+        $stmt = $this->pdo->prepare("INSERT INTO product (naam, password) VALUES (:naam, :password)");
+        $stmt->execute([
+            "naam" => $naam,
+            "password" => $password
+        ]);
+    }
+
+    public function selectData()
+    {
+        $sql = "SELECT * FROM producten";
+        $stmt = $this->pdo->prepare($sql);
+        $stmt->execute();
+    }
+
+    public function getDataById($id)
+    {
+        $sql = "SELECT * FROM producten WHERE id = :id";
+        $stmt = $this->pdo->prepare($sql);
+        $stmt->execute(['$id']);
+        return $stmt->fetch();
+    }
+
+    public function updateData($id, $naam, $prijs)
+    {
+        $sqlQuery = "UPDATE producten SET productnaam = :naam, prijs = :prijs WHERE id = :id";
+        $stmt = $this->pdo->prepare($sqlQuery);
+
+        // Bind parameters om SQL-injecties te voorkomen
+        $stmt->bindParam(':id', $id);
+        $stmt->bindParam(':naam', $naam);
+        $stmt->bindParam(':prijs', $prijs);
+
+        // Voer de query uit en geef bericht weer
+        if ($stmt->execute()) {
+            echo "Product bijgewerkt!";
+        } else {
+            echo "Product niet bijgewerkt!";
+        }
+    }
+
+    // DELETE functie
+    public function deleteData($id)
+    {
+        $sqlQuery = "DELETE FROM producten WHERE id = :id";
+        $stmt = $this->pdo->prepare($sqlQuery);
+
+        // Bind parameters
+        $stmt->bindParam(':id', $id);
+
+        // Voer de query uit en geef bericht weer
+        if ($stmt->execute()) {
+            echo "Product verwijderd!";
+        } else {
+            echo "Product niet verwijderd!";
+        }
     }
 }
 
